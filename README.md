@@ -52,16 +52,18 @@ Please download them manually from the link below and place them inside the `dat
 
 🔗 **[Google Drive Dataset Folder](https://drive.google.com/drive/folders/15LOvt1KsQx0skqppi8pC9c8uGSpGv1FI?usp=drive_link)**
 
-
 Clone the repository and install the dependencies:
 
-\`\`\`bash
-git clone https://github.com/yourusername/FeatureSelectionBenchmarkingHub.git
+```bash
+git clone https://github.com/ItamarElmakias/FeatureSelectionBenchmarkingHub.git
 cd FeatureSelectionBenchmarkingHub
-pip install -r requirements.txt
-\`\`\`
 
-Recommended: use a virtual environment. This project requires Python 3.7+.
+# (Recommended) Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate        # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 
 ## Usage
 

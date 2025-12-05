@@ -46,8 +46,11 @@ This platform supports dynamic benchmarking: researchers can upload new datasets
 ```
 
 ## Installation
-**Note:** Due to size constraints (~1GB), all datasets are hosted on Google Drive. Please download them manually from the following link and place them in the `data/` directory:
-🔗 [Google Drive Dataset Folder](https://drive.google.com/drive/folders/1lnolsMSfOv3EQBcsrAwM2ATy8y5nwJYT?usp=sharing](https://drive.google.com/drive/folders/15LOvt1KsQx0skqppi8pC9c8uGSpGv1FI?usp=sharing)
+
+**Note:** Due to size constraints (~1GB), all datasets are hosted on Google Drive.  
+Please download them manually from the link below and place them inside the `data/` directory:
+
+🔗 **[Google Drive Dataset Folder](https://drive.google.com/drive/folders/15LOvt1KsQx0skqppi8pC9c8uGSpGv1FI?usp=drive_link)**
 
 
 Clone the repository and install the dependencies:

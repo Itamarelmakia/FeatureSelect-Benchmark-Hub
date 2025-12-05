@@ -51,6 +51,11 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# ignore data files
+data/
+*.DS_Store
+.DS_Store
+
 # Translations
 *.mo
 *.pot

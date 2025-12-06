@@ -1,0 +1,262 @@
+{
+    "Skewness": [
+        {
+            "WIF": 1,
+            "skew_threshold": 1,
+            "comment": "skew_threshold=1"
+        }
+    ],
+    "CFS": [
+        {
+            "WIF": 1,
+            "t": 5,
+            "comment": "t=5"
+        }
+    ],
+    "MCFS": [
+        {
+            "WIF": 1,
+            "metric": "euclidean",
+            "neighbor_mode": "knn",
+            "weight_mode": "heat_kernel",
+            "k": "unique_labels",
+            "fisher_score": false,
+            "relieF": false,
+            "comment": "metric=euclidean; neighbor_mode=knn; weight_mode=heat_kernel; k=unique_labels; fisher_score=FALSE; relieF=FALSE"
+        }
+    ],
+    "RFS": [
+        {
+            "WIF": 1,
+            "gamma": 0.01,
+            "max_iter": 1000,
+            "comment": "gamma=0.01,max_iter=1000"
+        }
+    ],
+    "ReliefF": [
+        {
+            "WIF": 1,
+            "n_neighbors": 10,
+            "comment": "n_neighbors=10"
+        }
+    ],
+    "GRAPH": [
+        {
+            "WIF": 1,
+            "lambda1": 0.8,
+            "lambda2": 0.8,
+            "min_samples_leaf": 5,
+            "rho": 0.1,
+            "max_iter": 300,
+            "comment": "lambda1=0.8; lambda2=0.8; min_samples_leaf=5; rho=0.1; max_iter=300"
+        }
+    ],
+    "low_variance": [
+        {
+            "WIF": 1,
+            "p": 0.1,
+            "comment": "p=0.1; "
+        }
+    ],
+    "LS": [
+        {
+            "WIF": 1,
+            "metric": "euclidean",
+            "neighbor_mode": "knn",
+            "weight_mode": "heat_kernel",
+            "k": "unique_labels",
+            "fisher_score": false,
+            "relieF": false,
+            "comment": "metric=euclidean; neighbor_mode=knn; weight_mode=heat_kernel; k=unique_labels; fisher_score=FALSE; relieF=FALSE"
+        }
+    ],
+    "SVM_RBF": [
+        {
+            "WIF": 1,
+            "C": 1,
+            "gamma": "scale",
+            "comment": "C=1; gamma=scale"
+        }
+    ],
+    "CEI_GA": [
+        {
+            "WIF": 1,
+            "pre_keep": 50,
+            "ga_beta": 2,
+            "ga_pop": 20,
+            "ga_gen": 50,
+            "cv_splits": 5,
+            "comment": "pre_keep=50; ga_beta=2; ga_pop=20; ga_gen=50"
+        }
+    ],
+    "SVM_Forward": [
+        {
+            "WIF": 1,
+            "C": 1,
+            "penalty": "l1",
+            "tol": 0.001,
+            "max_iter": 1000,
+            "comment": "C=1; penalty=l1; tol=0.001; max_iter=1000"
+        }
+    ],
+    "SHAP": [
+        {
+            "WIF": 1,
+            "n_estimators": 100,
+            "learning_rate": 0.1,
+            "max_depth": 3,
+            "comment": "n_estimators=100; learning_rate=0.1; max_depth=3"
+        }
+    ],
+    "SVM_Backward": [
+        {
+            "WIF": 1,
+            "C": 0.1,
+            "penalty": "l1",
+            "tol": 0.05,
+            "max_iter": 500,
+            "comment": "C=0.1; penalty=l1; tol=0.05; max_iter=500"
+        }
+    ],
+    "DecisionTree_Backward": [
+        {
+            "WIF": 1,
+            "max_depth": 4,
+            "min_samples_split": 10,
+            "min_samples_leaf": 5,
+            "max_features": "sqrt",
+            "max_leaf_nodes": 15,
+            "splitter": "best",
+            "class_weight": "balanced",
+            "max_iter": 1000,
+            "comment": "max_depth=4; min_samples_split=10; min_samples_leaf=5; max_features=sqrt; max_leaf_nodes=15; splitter=best; class_weight=balanced; max_iter=1000"
+        }
+    ],
+    "DecisionTree_Forward": [
+        {
+            "WIF": 1,
+            "max_depth": 4,
+            "min_samples_split": 10,
+            "min_samples_leaf": 5,
+            "max_features": "sqrt",
+            "max_leaf_nodes": 15,
+            "splitter": "best",
+            "class_weight": "balanced",
+            "max_iter": 1000,
+            "comment": "max_depth=4; min_samples_split=10; min_samples_leaf=5; max_features=sqrt; max_leaf_nodes=15; splitter=best; class_weight=balanced; max_iter=1000"
+        }
+    ],
+    "AdaBoost": [
+        {
+            "WIF": 1,
+            "n_estimators": 100,
+            "learning_rate": 5,
+            "max_depth": 5,
+            "comment": "n_estimators=100; learning_rate=5; max_depth=5"
+        }
+    ],
+    "ETree": [
+        {
+            "WIF": 1,
+            "n_estimators": 200,
+            "max_depth": 3,
+            "comment": "n_estimators=200; max_depth=3"
+        }
+    ],
+    "CT": [
+        {
+            "WIF": 1,
+            "t": 1,
+            "comment": "t=1"
+        }
+    ],
+    "CAE": [
+        {
+            "WIF": 1,
+            "num_epochs": 16,
+            "batch_size": 16,
+            "learning_rate": 5,
+            "start_temp": 2,
+            "phase_2_start": 600,
+            "min_temp": 1500,
+            "tryout_limit": 60,
+            "comment": "num_epochs=16; batch_size=16; learning_rate=5; start_temp=2; phase_2_start=600; min_temp=1500tryout_limit=60"
+        }
+    ],
+    "DLFS": [
+        {
+            "WIF": 1,
+            "data_batch_size": 16,
+            "mask_batch_size": 16,
+            "s": 5,
+            "s_p": 2,
+            "phase_2_start": 600,
+            "max_batches": 1500,
+            "early_stopping_patience": 60,
+            "activation": "softmax",
+            "loss function": "categorical_crossentropy",
+            "comment": "data_batch_size=16; mask_batch_size=16; s=5; s_p=2; phase_2_start=600; max_batches=1500early_stopping_patience=60; activation=softmax; loss function=categorical_crossentropy"
+        }
+    ],
+    "UFS": [
+        {
+            "WIF": 1,
+            "epochs_number": 200,
+            "batch_size_value": 16,
+            "loss_weight_1": 0.0078125,
+            "p_learning_rate": 0.001,
+            "comment": "epochs_number=200; batch_size_value=16; loss_weight_1=0.0078125; p_learning_rate=0.001"
+        }
+    ],
+    "SVC": [
+        {
+            "WIF": 1,
+            "C": 1,
+            "penalty": "l2",
+            "loss": "hinge",
+            "dual": false,
+            "comment": "C=1; penalty=l2; loss=hinge; dual=FALSE"
+        }
+    ],
+    "Univariate": [
+        {
+            "WIF": 1,
+            "score_func": "chi2",
+            "comment": "score_func=chi2"
+        }
+    ],
+    "alpha_investing": [
+        {
+            "WIF": 1,
+            "w0": 10,
+            "dw": 0.01,
+            "comment": "w0=10,dw=0.01"
+        }
+    ],
+    "mRMR": [
+        {
+            "WIF": 1,
+            "relevance": "f",
+            "redundancy": "c",
+            "denominator": "mean",
+            "cat_encoding": "leave_one_out",
+            "n_jobs": -1,
+            "comment": "relevance=f; redundancy=c; denominator=mean"
+        }
+    ],
+    "GRACES": [
+        {
+            "WIF": 1,
+            "epochs": 5,
+            "learning_rate": 0.001,
+            "q": 2,
+            "n_dropouts": 10,
+            "dropout_prob": 0.5,
+            "batch_size": 16,
+            "alpha": 0.95,
+            "sigma": 0.1,
+            "f_correct": 0,
+            "comment": "epochs=5; learning_rate=0.001; q=2n_dropouts=10dropout_prob=0.5batch_size=16alpha=0.95sigma=0.1alpha=0.95f_correct=0"
+        }
+    ]
+}

@@ -67,7 +67,7 @@ Use this hub to **reproduce all experiments**, **profile new datasets**, or **be
   https://drive.google.com/drive/u/0/folders/1tzrw9DSBDdoqvZp8PjVpfHjQiGox7GfS  
 
 - 📄 **Paper PDF / preprint**  
-  (Add your link here once publicly available.)
+  https://www.sciencedirect.com/science/article/abs/pii/S095070512502060X
 
 ---
 

@@ -62,6 +62,13 @@ cover/
 *.DS_Store
 .DS_Store
 
+# Generated results: large / reproducible files not committed
+results/article_stability/
+results/**/*.parquet
+results/**/*.xlsx
+results/**/*.pdf
+!results/**/README.md
+
 # Translations
 *.mo
 *.pot

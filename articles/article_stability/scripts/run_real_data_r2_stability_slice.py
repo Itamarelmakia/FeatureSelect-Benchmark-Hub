@@ -431,14 +431,15 @@ def compute_stability_profile(df):
             val = _kuncheva_pair(len(set(a) & set(b)), d, K)
             if val is not None:
                 kv.append(val)
-        # Nogueira-style estimate
+        # Nogueira variance-based stability estimator (exact, with M/(M-1) correction)
         nog = None
-        if d > 0 and K > 0 and n_ok > 0:
+        if d > 0 and K > 0 and n_ok > 1:
             denom = (K / d) * (1.0 - K / d)
             if denom != 0:
                 var_sum = sum((c / n_ok) * (1.0 - c / n_ok)
                               for c in fold_count.values())
-                nog = 1.0 - (var_sum / d) / denom
+                mean_unbiased_var = (n_ok / (n_ok - 1.0)) * (var_sum / d)
+                nog = 1.0 - mean_unbiased_var / denom
         # observed-vs-random Jaccard baseline
         exp_rand_jacc = None
         if d > 0 and K > 0:

@@ -346,23 +346,23 @@ def analyze_group(gdf, d, d_was_inferred, d_source):
     else:
         k_mean = k_std = k_min = k_max = None
 
-    # ---- G. Nogueira-style threshold-free stability ------------------------
-    # NOTE: this is a Nogueira-STYLE *exploratory* estimate, not the exact
-    # JMLR 2018 estimator (which uses the unbiased sample variance with an
-    # M/(M-1) correction). It MUST be verified against Nogueira et al. (2018)
-    # before any final-manuscript use. Formula used here:
-    #   stability = 1 - mean_i[ p_i*(1-p_i) ] / ( (k/d)*(1-k/d) )
-    # with p_i the empirical per-feature selection probability over folds.
+    # ---- G. Nogueira variance-based stability estimator (exact) -----------
+    # Exact Nogueira et al. (2018) unbiased estimator with M/(M-1) correction.
+    # Formula: stability = 1 - (M/(M-1)) * (var_sum/d) / denom
+    # where var_sum = sum_i p_i*(1-p_i), p_i = c_i/M, denom = (k/d)*(1-k/d).
+    # Never-selected features (c_i=0) contribute zero; division by d is retained.
+    # Requires M > 1, 0 < K < d, and nonzero denominator.
     nog_stability = None
     nog_denom = None
-    if d > 0 and K > 0 and n_ok > 0:
+    if d > 0 and K > 0 and n_ok > 1:
         nog_denom = (K / d) * (1.0 - K / d)
         if nog_denom == 0:
-            print(f"  [warn] Nogueira-style denominator is zero for K={K}; returning null.")
+            print(f"  [warn] Nogueira estimator denominator is zero for K={K}; returning null.")
         else:
-            # Sum p_i*(1-p_i) over ALL d features; never-selected features add 0.
+            # Sum p_i*(1-p_i) over selected features; never-selected features add 0.
             var_sum = sum((c / n_ok) * (1.0 - c / n_ok) for c in fold_count.values())
-            nog_stability = 1.0 - (var_sum / d) / nog_denom
+            mean_unbiased_var = (n_ok / (n_ok - 1.0)) * (var_sum / d)
+            nog_stability = 1.0 - mean_unbiased_var / nog_denom
 
     # ---- I. Random-selection baseline for pairwise Jaccard -----------------
     if d > 0 and K > 0:

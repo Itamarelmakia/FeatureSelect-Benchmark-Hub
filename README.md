@@ -63,8 +63,11 @@ Use this hub to **reproduce all experiments**, **profile new datasets**, or **be
 - ▶️ **Colab demo** (run the pipeline in the cloud):  
   https://colab.research.google.com/drive/1WAGunBduHnqhTAD-vuqm8_4MUVkFZIW-#scrollTo=Ffb5BmyQPlrq
 
-- 📂 **Datasets on Google Drive** (too large for direct GitHub hosting):  
-  https://drive.google.com/drive/u/0/folders/1tzrw9DSBDdoqvZp8PjVpfHjQiGox7GfS  
+- 📂 **[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** (Google Drive dataset archive, ≈1–2 GB):  
+  https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing
+
+- 🖥️ **[FeatureWise AI](https://featurewise.itamarelmakias.ai)** (live interactive system):  
+  https://featurewise.itamarelmakias.ai
 
 - 📄 **Paper PDF / preprint**  
   https://www.sciencedirect.com/science/article/abs/pii/S095070512502060X
@@ -131,10 +134,13 @@ This project requires **Python 3.7+**.
 
 ## Datasets
 
-Due to size constraints (≈1–2 GB), **datasets are hosted on Google Drive** rather than stored directly in the repo.
+This repository contains the **reproducibility code and experimental scripts**. The dataset archive is hosted separately on Google Drive due to size (≈1–2 GB).
 
-1. Download the datasets from:  
-   https://drive.google.com/drive/u/0/folders/1tzrw9DSBDdoqvZp8PjVpfHjQiGox7GfS
+**[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** — Google Drive folder containing all 102 real-world datasets used in the study.
+
+To set up locally:
+
+1. Download the **[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** folder from Google Drive.
 2. Place all dataset folders under the local `data/` directory, preserving the internal structure:
    - `data/GEMS/…`
    - `data/GitHub/…`
@@ -142,6 +148,11 @@ Due to size constraints (≈1–2 GB), **datasets are hosted on Google Drive** r
    - etc.
 
 Once the `data/` folder is populated, the main scripts and notebooks should run without further changes.
+
+> **Platform overview**  
+> - **This GitHub repository** — reproducibility code, pipeline scripts, and configuration.  
+> - **[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** (Google Drive) — dataset archive for offline reproduction.  
+> - **[FeatureWise AI](https://featurewise.itamarelmakias.ai)** — live interactive system for exploring feature-selection results and hardness labels.
 
 ---
 

@@ -4,7 +4,10 @@ The stability analysis uses datasets from two sources:
 
 ## Real-data experiments (Stage R2)
 
-Three p≫n datasets, already present in the hub's `data/` directory:
+Three p≫n datasets, expected at the following local paths under the hub's `data/`
+directory. These files are **not** committed to the public Git repository — download and
+populate the benchmark dataset archive first (see
+[../../../data/README.md](../../../data/README.md)):
 
 | Dataset | Path | Source | n | p |
 |---------|------|--------|---|---|

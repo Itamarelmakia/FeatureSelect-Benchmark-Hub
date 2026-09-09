@@ -5,7 +5,11 @@ Companion code and datasets for:
 
 > **Itamar Elmakias, Dan Vilenchik**  
 > *Choosing the Right Dataset: Hardness Criteria for Feature Selection Benchmarking*,  
-> Knowledge-Based Systems, under review (Ms. Ref. No. **KNOSYS-D-25-08690R2**).
+> Knowledge-Based Systems, Volume 334, 2026, Article 115022.  
+> DOI: [10.1016/j.knosys.2025.115022](https://doi.org/10.1016/j.knosys.2025.115022)
+
+This hub also contains the public reproducibility package for a second, related paper on
+feature-selection stability — see [Publications](#publications) below.
 
 ---
 
@@ -69,39 +73,82 @@ Use this hub to **reproduce all experiments**, **profile new datasets**, or **be
 - 🖥️ **[FeatureWise AI](https://featurewise.itamarelmakias.ai)** (live interactive system):  
   https://featurewise.itamarelmakias.ai
 
-- 📄 **Paper PDF / preprint**  
+- 📄 **Dataset Hardness paper**  
   https://www.sciencedirect.com/science/article/abs/pii/S095070512502060X
+
+---
+
+## Publications
+
+This hub hosts reproducibility material for **two distinct, published papers**. They
+share the same underlying benchmark (datasets, FS algorithms, pipeline) but report on
+different research questions and should be cited separately.
+
+### 1. Dataset Hardness (main benchmark & hardness framework)
+
+> **Itamar Elmakias, Dan Vilenchik**  
+> *Choosing the right dataset: Hardness criteria for feature selection benchmarking*  
+> Knowledge-Based Systems, Volume 334, 2026, Article 115022.  
+> DOI: [10.1016/j.knosys.2025.115022](https://doi.org/10.1016/j.knosys.2025.115022)
+
+This is the primary paper behind the hub: the 27-algorithm × 102-dataset benchmark,
+the Easy/Medium/Hard hardness framework, and the peeling procedure described in
+[Overview](#overview). Its reproducibility pointer lives at
+[`articles/article_dataset_hardness/README.md`](articles/article_dataset_hardness/README.md).
+
+### 2. Feature Stability as a Trust Layer
+
+> **Itamar Elmakias, Dor Kolsky, Dan Vilenchik**  
+> *Feature Stability as a Trust Layer for Feature Selection: Resampling-Based Recurrence
+> Profiles Beyond Predictive Performance*  
+> Mathematics, 2026, 14(13), 2372.  
+> DOI: [10.3390/math14132372](https://doi.org/10.3390/math14132372)
+
+A separate study built on top of the same hub pipeline, examining resampling-based
+feature-selection **stability** (recurrence profiles) as a complement to predictive
+performance. Its public reproducibility package — scripts, configs, and data/output
+documentation — lives under
+[`articles/article_stability/`](articles/article_stability/README.md).
 
 ---
 
 ## Repository Structure
 
+This reflects what is actually tracked in git. The full dataset archive is **not**
+part of the repository — see [Datasets](#datasets) below.
+
 ```text
 .
-├── data/                        # All datasets, grouped by source/repository
-│   ├── GEMS/
-│   ├── GitHub/
-│   ├── Haibasim/
-│   ├── ... (other repositories)
-├── logs/                        # Logger folder
-├── notebooks/                  # Jupyter notebooks (analysis, figures, sanity checks)
-├── results/                    # Results per project
-│   ├── Convert Data 2 Hard/    # Peeling / hardness-conversion experiments
-│   └── FS/                     # Main FS benchmarking runs
-├── src/                        # Source code
-│   ├── Main_FS.py              # Main FS benchmarking pipeline
-│   ├── main_Include Convert Data 2 Hard.py  # Peeling / hard-dataset generator
-│   ├── configs/                # Configuration files
+├── articles/                    # Reproducibility packages for individual papers
+│   ├── article_dataset_hardness/   # Pointer to the KBS hardness study (this hub's main pipeline)
+│   └── article_stability/          # Public reproducibility package for the Mathematics stability paper
+│       ├── scripts/
+│       ├── configs/README.md
+│       ├── data/README.md
+│       └── results/README.md
+├── data/
+│   └── README.md                # Instructions for obtaining the external dataset archive
+├── sample_data_medium/          # A handful of small .mat files for quick local sanity checks
+├── src/                         # Main FS benchmarking pipeline (source code)
+│   ├── Main_FS.py                  # Main FS benchmarking pipeline
+│   ├── run_single_dataset.py       # Run the pipeline on a single dataset
+│   ├── utilities.py                # Utilities: CV, parallelism, logging, etc.
+│   ├── configs/                    # Configuration files
 │   │   └── config.py
-│   ├── fs_algorithms/          # 27 FS algorithms
-│   │   ├── AdaBoost.py
-│   │   ├── CAE/
-│   │   ├── DLFS/
-│   │   ├── ... (other methods)
-│   ├── utilities.py            # Utilities: CV, parallelism, logging, etc.
-│   └── ...
+│   └── fs_algorithms/              # FS algorithm implementations
+│       ├── AdaBoost.py
+│       ├── CAE/
+│       ├── DLFS/
+│       └── ... (other methods)
+├── requirements.txt
+├── LICENSE
 └── README.md
 ```
+
+After you download the Google Drive archive (see [Datasets](#datasets)), you populate
+your **local** `data/` directory with the source-specific folders it expects
+(`data/scikit-feature/`, `data/UCI/`, etc.) — those folders are intentionally not
+committed to git.
 
 ---
 
@@ -134,20 +181,19 @@ This project requires **Python 3.7+**.
 
 ## Datasets
 
-This repository contains the **reproducibility code and experimental scripts**. The dataset archive is hosted separately on Google Drive due to size (≈1–2 GB).
+This repository contains the **reproducibility code and experimental scripts**. The full
+benchmark dataset archive is hosted separately on Google Drive because of its size and is
+not tracked in this repository.
 
 **[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** — Google Drive folder containing all 102 real-world datasets used in the study.
 
 To set up locally:
 
 1. Download the **[FeatureSelect Benchmark Datasets](https://drive.google.com/drive/folders/12W8qftORPvwxVmE4dPGLVVEwTHDT5Sn9?usp=sharing)** folder from Google Drive.
-2. Place all dataset folders under the local `data/` directory, preserving the internal structure:
-   - `data/GEMS/…`
-   - `data/GitHub/…`
-   - `data/Haibasim/…`
-   - etc.
+2. Extract it, preserving the internal directory structure, into your local `data/` directory
+   (e.g. `data/scikit-feature/…`, `data/UCI/…`, and the other source-specific folders in the archive).
 
-Once the `data/` folder is populated, the main scripts and notebooks should run without further changes.
+See [`data/README.md`](data/README.md) for details. Once the `data/` folder is populated, the main scripts run without further changes.
 
 > **Platform overview**  
 > - **This GitHub repository** — reproducibility code, pipeline scripts, and configuration.  
@@ -204,13 +250,36 @@ To add a new dataset:
 
 ## Citation
 
-If you use this repository, datasets, or methodology in your research, please cite:
+If you use this repository, the benchmark, or the hardness methodology in your research,
+please cite the Dataset Hardness paper:
 
-> **Itamar Elmakias, Dan Vilenchik**.  
-> *Choosing the Right Dataset: Hardness Criteria for Feature Selection Benchmarking*.  
-> Knowledge-Based Systems, Ms. Ref. No. KNOSYS-D-25-08690R2.
+```bibtex
+@article{elmakias2026datasethardness,
+  author  = {Elmakias, Itamar and Vilenchik, Dan},
+  title   = {Choosing the right dataset: Hardness criteria for feature selection benchmarking},
+  journal = {Knowledge-Based Systems},
+  volume  = {334},
+  year    = {2026},
+  articleno = {115022},
+  doi     = {10.1016/j.knosys.2025.115022}
+}
+```
 
-A BibTeX entry will be added here once the paper is formally published.
+If you use the stability-analysis reproducibility package under `articles/article_stability/`,
+please cite the Feature Stability paper instead (or in addition):
+
+```bibtex
+@article{elmakias2026featurestability,
+  author  = {Elmakias, Itamar and Kolsky, Dor and Vilenchik, Dan},
+  title   = {Feature Stability as a Trust Layer for Feature Selection: Resampling-Based Recurrence Profiles Beyond Predictive Performance},
+  journal = {Mathematics},
+  volume  = {14},
+  number  = {13},
+  year    = {2026},
+  articleno = {2372},
+  doi     = {10.3390/math14132372}
+}
+```
 
 ---
 

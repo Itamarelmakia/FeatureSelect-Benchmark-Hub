@@ -62,6 +62,9 @@ cover/
 *.DS_Store
 .DS_Store
 
+# Agent run checkpoints (local only)
+.ai-run/
+
 # Generated results: large / reproducible files not committed
 results/article_stability/
 results/**/*.parquet

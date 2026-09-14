@@ -140,7 +140,10 @@ part of the repository — see [Datasets](#datasets) below.
 │       ├── CAE/
 │       ├── DLFS/
 │       └── ... (other methods)
-├── requirements.txt
+├── tests/                       # Test suite (pytest)
+├── requirements.txt             # Core dependencies
+├── requirements-optional.txt    # Heavy extras for the 4 neural FS methods
+├── requirements-dev.txt         # Test dependencies
 ├── LICENSE
 └── README.md
 ```
@@ -175,7 +178,29 @@ source .venv/bin/activate      # on Linux / macOS
 pip install -r requirements.txt
 ```
 
-This project requires **Python 3.7+**.
+This installs everything needed to run **23 of the 27** feature selection
+algorithms and the full evaluation pipeline.
+
+4. **(Optional) Install the neural FS extras**
+
+Four algorithms — **CAE**, **DLFS**, **UFS** and **GRACES** — depend on large,
+platform-specific deep-learning packages. They are kept out of the core
+requirements so the benchmark installs cleanly on any machine:
+
+```bash
+pip install -r requirements-optional.txt
+```
+
+To see exactly which algorithms your environment can run:
+
+```bash
+python src/Main_FS.py --list-algorithms
+```
+
+Algorithms whose dependencies are missing are reported and skipped — they never
+abort a benchmark run.
+
+This project requires **Python 3.8+** (tested on 3.14).
 
 ---
 
@@ -204,19 +229,55 @@ See [`data/README.md`](data/README.md) for details. Once the `data/` folder is p
 
 ## Usage
 
+### 0. Quick sanity check (no download required)
+
+`sample_data_medium/` contains a few small `.mat` datasets committed to the repo
+so you can verify your installation before downloading the full archive:
+
+```bash
+python src/Main_FS.py --data-dir sample_data_medium --datasets glass --algorithms ETree
+```
+
+This runs one feature selection algorithm under the standard 5CV protocol and
+writes `results/FS/feature_selection_benchmark.xlsx`. It takes well under a
+minute.
+
 ### 1. Reproduce the main FS benchmark
 
-This runs the full FS benchmarking pipeline (27 algorithms × selected datasets) using the configuration in `src/configs/config.py`:
+This runs the full FS benchmarking pipeline (every available algorithm × every
+dataset found under `data/`) using the configuration in `src/configs/config.py`:
 
 ```bash
 python src/Main_FS.py --config src/configs/config.py
 ```
 
-Outputs are written to `results/FS/` and include:
-- per-dataset, per-algorithm performance (AUC, accuracy, etc.),
+Outputs are written to `results/FS/<experiment-name>.xlsx` and include:
+- per-dataset, per-algorithm performance (AUC, accuracy, precision, recall, F1),
 - runtime statistics,
-- selected feature sets,
-- hardness labels derived from the FS utility criteria.
+- selected feature sets (frequency, average-rank and mean-importance consensus),
+- the all-features (no-FS) baselines the hardness criteria are measured against.
+
+Results accumulate across runs: re-running skips (dataset, algorithm, K,
+evaluation model) combinations that are already recorded in the workbook.
+
+**Options**
+
+| Flag | Meaning |
+|------|---------|
+| `--config PATH` | Configuration module to use (default `src/configs/config.py`). |
+| `--data-dir PATH` | Where to look for `.mat` datasets (default `data/`). |
+| `--datasets A,B` | Only run these datasets (default: all found). |
+| `--algorithms A,B` | Only run these algorithms (default: all in the group). |
+| `--alg-group GROUP` | `All`, `Fast`, `Slow` or `GPU` (default `All`). |
+| `--experiment-name NAME` | Output workbook name (default `feature_selection_benchmark`). |
+| `--output-dir PATH` | Where to write results (default `results/FS/`). |
+| `--list-algorithms` | Print which algorithms this environment can run, then exit. |
+
+To benchmark a single `.mat` file that lives outside the dataset tree, use:
+
+```bash
+python src/run_single_dataset.py path/to/dataset.mat --experiment_name my_experiment
+```
 
 ### 2. Run everything in Colab (no local setup)
 
@@ -245,6 +306,25 @@ To add a new dataset:
    - performance across 27 FS methods,
    - runtime,
    - and an **Easy / Medium / Hard** hardness label.
+
+---
+
+## Tests
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+pytest
+```
+
+The suite covers the import contract (the pipeline must run without the optional
+neural dependencies), the CLI contract, and an end-to-end benchmark run over the
+committed `sample_data_medium/` files — so it passes on a clean clone, with no
+dataset download. The end-to-end tests are marked `slow`:
+
+```bash
+pytest -m "not slow"    # fast checks only
+pytest -m slow          # end-to-end benchmark run
+```
 
 ---
 

@@ -1,3 +1,11 @@
+# Core dependencies for the feature selection benchmarking hub.
+#
+# Installing these is enough to run 23 of the 27 feature selection algorithms
+# and the full evaluation pipeline. The remaining four (CAE, DLFS, UFS, GRACES)
+# are neural methods that need the heavy, platform-specific packages listed in
+# requirements-optional.txt. Run `python src/Main_FS.py --list-algorithms` to
+# see what the current environment can run.
+
 numpy
 pandas
 scipy
@@ -5,3 +13,13 @@ scikit-learn
 matplotlib
 pyarrow
 openpyxl
+
+# Used by individual feature selection algorithms
+shap                # SHAP
+skrebate            # ReliefF
+category_encoders   # mRMR
+tqdm                # mRMR
+
+# Used by the benchmarking pipeline itself
+joblib
+packaging

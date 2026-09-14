@@ -3,20 +3,32 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   # only WARNING or above
 
-# 2) Import TF and configure threading for CPU work:
-import tensorflow as tf
-# e.g. limit each op to 4 threads, and run up to 2 ops in parallel
-tf.config.threading.set_intra_op_parallelism_threads(4)
-tf.config.threading.set_inter_op_parallelism_threads(2)
+# 2) TensorFlow is an OPTIONAL dependency.
+#    It is required only by the neural feature-selection algorithms
+#    (CAE, DLFS, UFS). The rest of the benchmark runs without it.
+try:
+    import tensorflow as tf
+except ImportError:  # pragma: no cover - depends on the local environment
+    tf = None
+else:
+    # e.g. limit each op to 4 threads, and run up to 2 ops in parallel
+    tf.config.threading.set_intra_op_parallelism_threads(4)
+    tf.config.threading.set_inter_op_parallelism_threads(2)
 
-# 3) Configure GPU memory growth so you don’t pre‑allocate everything:
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
+    # 3) Configure GPU memory growth so we do not pre-allocate everything:
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
 
 
-import torch
+# torch is an OPTIONAL dependency too. It is required by the neural feature
+# selection algorithms (CAE, DLFS, UFS, GRACES) and is used elsewhere only to
+# detect an available GPU. Without it, everything simply runs on CPU.
+try:
+    import torch
+except ImportError:  # pragma: no cover - depends on the local environment
+    torch = None
 
 # Operating System and System-Specific
 import os
@@ -48,8 +60,6 @@ from joblib import Parallel, delayed
 # File Handling
 import glob
 import openpyxl
-import xlrd 
-import xlsxwriter
 import re
 import random as rn
 
@@ -65,6 +75,29 @@ from configs.config import *
 GPU_ALGOS = ['CAE', 'UFS', 'DLFS', 'GRACES']
 
 
+class _FallbackCpuDevice:
+    """Stand-in for ``torch.device('cpu')`` when torch is not installed.
+
+    Only ``.type`` is consumed by the pipeline, and the neural algorithms that
+    would need a real torch device are unavailable without torch anyway.
+    """
+
+    type = 'cpu'
+
+    def __repr__(self):
+        return "device(type='cpu')"
+
+
+def get_cpu_device():
+    """Return a CPU device object, with or without torch installed."""
+    return torch.device('cpu') if torch is not None else _FallbackCpuDevice()
+
+
+def torch_gpu_available():
+    """True only when torch is installed *and* exposes a usable CUDA GPU."""
+    return torch is not None and torch.cuda.is_available()
+
+
 
 
 # Append directories to sys.path using os.path.join.
@@ -74,48 +107,13 @@ sys.path.append(path + '/fs_algorithms/DLFS')
 sys.path.append(path + '/fs_algorithms/CAE')     
 sys.path.append(path + '/fs_algorithms/UFS')      
 
-# Import algorithm functions.
-from fs_algorithms.ETree import ETree_FS
-from fs_algorithms.AdaBoost import AdaBoost_FS
-from fs_algorithms.Univariate import Univariate_FS
-from fs_algorithms.CT import CT_FS
-from fs_algorithms.SHAP import SHAP_FS
-from fs_algorithms.SVM_RBF import SVM_RBF_FS
-
-
-from fs_algorithms.low_variance import low_variance_FS
-from fs_algorithms.SVC import SVC_FS
-from fs_algorithms.LS import LS_FS
-from fs_algorithms.Skewness import Skewness_FS
-from fs_algorithms.MCFS import MCFS_FS
-from fs_algorithms.DT import DT_FS
-from fs_algorithms.ReliefF import ReliefF_FS
-from fs_algorithms.alpha_investing import alpha_investing_FS
-from fs_algorithms.DecisionTree_Forward import DecisionTree_Forward_FS
-from fs_algorithms.SVM_Forward import SVM_Forward_FS
-from fs_algorithms.GRAPH import GRAPH_FS
-from fs_algorithms.RFS import RFS_FS
-from fs_algorithms.LeadingEV import LeadingEV_FS
-from fs_algorithms.mRMR import mRMR_FS
-from fs_algorithms.GRACES import GRACES_FS
-from fs_algorithms.DecisionTree_Backward import DecisionTree_Backward_FS
-from fs_algorithms.SVM_Backward import SVM_Backward_FS
-from fs_algorithms.CEI_GA import CEI_GA_FS
-
-
-
-
-# Try to import from a single file; if that fails, import from the subfolder.
-try:
-    # Import from single file if all functions are stored in one place
-    from fs_algorithms.DLFS import DLFS_FS
-    from fs_algorithms.CAE import CAE_FS
-    from fs_algorithms.UFS import UFS_FS
-except ImportError:
-    # Import from folder if functions are stored in multiple files within a folder
-    from fs_algorithms.DLFS.DLFS import DLFS_FS
-    from fs_algorithms.CAE.CAE import CAE_FS
-    from fs_algorithms.UFS.UFS import UFS_FS
+# NOTE: the feature selection functions themselves are NOT imported here.
+# `from configs.config import *` (above) already provides
+# `feature_selection_mapping`, which is the single place where algorithm names
+# are bound to their implementations. Importing them a second time in this
+# module was redundant and made the whole pipeline fail to import whenever a
+# single optional dependency (tensorflow / torch / torch_geometric / keras)
+# was missing. Selectors are looked up through `feature_selection_mapping`.
 
 
 # In utilities.py
@@ -977,8 +975,8 @@ def process_input(k, fixed_threshold, context, task_index):
     import pandas as pd
     from sklearn.preprocessing import MinMaxScaler
     from sklearn.model_selection import train_test_split
-    import tensorflow as tf
-    import torch
+    # `tf` and `torch` come from the module-level optional imports above; they
+    # are None when the optional neural dependencies are not installed.
 
     FS_HD        = context['FS_HD']
     dataset_path = context['dataset_path']
@@ -995,18 +993,18 @@ def process_input(k, fixed_threshold, context, task_index):
         if device.type == 'cuda':
             return '/device:GPU:0'
         if device.type == 'mps':
-            gpus = tf.config.list_logical_devices('GPU')
+            gpus = tf.config.list_logical_devices('GPU') if tf is not None else []
             return gpus[0].name if gpus else '/device:CPU:0'
         return '/device:CPU:0'
 
     # Pick the torch device based on use_gpu flag
-    if use_gpu and torch.cuda.is_available():
+    if use_gpu and torch_gpu_available():
         if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
             device = torch.device('mps')   # Apple Silicon
         else:
             device = torch.device('cuda')  # CUDA
     else:
-        device = torch.device('cpu')
+        device = get_cpu_device()
 
     print(f"[Task {task_index}] {algo_name} → {device.type.upper()} (use_gpu={use_gpu})")
 
@@ -1113,8 +1111,9 @@ def run_parallel_processing(context, fixed_threshold, k_list, debug=False):
     or serially on GPU‐eligible algos.
     """
     import multiprocessing as mp
-    import torch
     from joblib import Parallel, delayed
+    # `torch` comes from the module-level optional import above; GPU support is
+    # detected via torch_gpu_available(), which is False when torch is absent.
 
     ks        = k_list if context['FS_HD'] == 'FS' else [context['columns_len']]
     algo_name = context['algo_name']
@@ -1130,7 +1129,7 @@ def run_parallel_processing(context, fixed_threshold, k_list, debug=False):
 
 
     # Decide once: is this algo allowed to use GPU?
-    gpu_available = torch.cuda.is_available()
+    gpu_available = torch_gpu_available()
     use_gpu       = (algo_name in GPU_ALGOS) and gpu_available
 
     # propagate this decision into the context

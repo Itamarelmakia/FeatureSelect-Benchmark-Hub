@@ -1,5 +1,6 @@
 # config.py – Simplified for Real World Datasets only
 
+import importlib
 import os
 import pandas as pd 
 import sys
@@ -80,36 +81,83 @@ sys.path.append(os.path.join(fs_algorithms_dir, 'DLFS'))
 sys.path.append(os.path.join(fs_algorithms_dir, 'CAE'))
 sys.path.append(os.path.join(fs_algorithms_dir, 'UFS'))
 
-# Import from scripts directly (not as a package)
-from ETree import ETree_FS
-from AdaBoost import AdaBoost_FS
-from Univariate import Univariate_FS
-from CT import CT_FS
-from low_variance import low_variance_FS
-from SVC import SVC_FS
-from SVM_RBF import SVM_RBF_FS
-from LS import LS_FS
-from SHAP import SHAP_FS
-from Skewness import Skewness_FS
-from MCFS import MCFS_FS
-from DT import DT_FS
-from ReliefF import ReliefF_FS
-from alpha_investing import alpha_investing_FS
-from DecisionTree_Forward import DecisionTree_Forward_FS
-from SVM_Forward import SVM_Forward_FS
-from GRAPH import GRAPH_FS
-from RFS import RFS_FS
-from LeadingEV import LeadingEV_FS
-from mRMR import mRMR_FS
-from GRACES import GRACES_FS
-from DecisionTree_Backward import DecisionTree_Backward_FS
-from SVM_Backward import SVM_Backward_FS
-from CEI_GA import CEI_GA_FS
+# ---------------------------------------------------------------------------
+# Feature selection algorithm registry
+#
+# Each selector is imported defensively. The neural methods (CAE, DLFS, UFS,
+# GRACES) depend on optional heavy packages (tensorflow, torch,
+# torch_geometric, keras, h5py) that deliberately are not part of the core
+# `requirements.txt`. A selector whose dependencies are missing is recorded in
+# `unavailable_algorithms` and left out of `feature_selection_mapping`, instead
+# of aborting the entire benchmark at import time.
+#
+# When every dependency IS installed, the resulting mapping is identical to the
+# original explicit import list -- the benchmark semantics are unchanged.
+# ---------------------------------------------------------------------------
 
-# Import from subfolder scripts
-from DLFS import DLFS_FS
-from CAE import CAE_FS
-from UFS import UFS_FS
+# (algorithm name, module to import, function to pull out of that module)
+ALGORITHM_IMPORTS = [
+    ('ETree', 'ETree', 'ETree_FS'),
+    ('AdaBoost', 'AdaBoost', 'AdaBoost_FS'),
+    ('Univariate', 'Univariate', 'Univariate_FS'),
+    ('CT', 'CT', 'CT_FS'),
+    ('low_variance', 'low_variance', 'low_variance_FS'),
+    ('SVC', 'SVC', 'SVC_FS'),
+    ('SVM_RBF', 'SVM_RBF', 'SVM_RBF_FS'),
+    ('SHAP', 'SHAP', 'SHAP_FS'),
+    ('LS', 'LS', 'LS_FS'),
+    ('Skewness', 'Skewness', 'Skewness_FS'),
+    ('MCFS', 'MCFS', 'MCFS_FS'),
+    ('DT', 'DT', 'DT_FS'),
+    ('ReliefF', 'ReliefF', 'ReliefF_FS'),
+    ('alpha_investing', 'alpha_investing', 'alpha_investing_FS'),
+    ('DecisionTree_Forward', 'DecisionTree_Forward', 'DecisionTree_Forward_FS'),
+    ('SVM_Forward', 'SVM_Forward', 'SVM_Forward_FS'),
+    ('GRAPH', 'GRAPH', 'GRAPH_FS'),
+    ('RFS', 'RFS', 'RFS_FS'),
+    ('LeadingEV', 'LeadingEV', 'LeadingEV_FS'),
+    ('mRMR', 'mRMR', 'mRMR_FS'),
+    ('GRACES', 'GRACES', 'GRACES_FS'),
+    ('DecisionTree_Backward', 'DecisionTree_Backward', 'DecisionTree_Backward_FS'),
+    ('SVM_Backward', 'SVM_Backward', 'SVM_Backward_FS'),
+    ('CEI_GA', 'CEI_GA', 'CEI_GA_FS'),
+    # Implemented in their own sub-folders (already added to sys.path above)
+    ('DLFS', 'DLFS', 'DLFS_FS'),
+    ('CAE', 'CAE', 'CAE_FS'),
+    ('UFS', 'UFS', 'UFS_FS'),
+    # 'CARTE' is implemented in fs_algorithms/CARTE.py but is not part of the
+    # published benchmark and is intentionally left unregistered.
+]
+
+# Mapping of algorithm names to their feature selection functions.
+feature_selection_mapping = {}
+# Algorithm name -> reason it could not be loaded (missing optional dependency).
+unavailable_algorithms = {}
+
+for _algo_name, _module_name, _function_name in ALGORITHM_IMPORTS:
+    try:
+        _module = importlib.import_module(_module_name)
+        feature_selection_mapping[_algo_name] = getattr(_module, _function_name)
+    except Exception as _import_error:  # noqa: BLE001 - report, never abort
+        unavailable_algorithms[_algo_name] = (
+            f"{type(_import_error).__name__}: {_import_error}"
+        )
+
+
+def describe_algorithm_availability():
+    """Human readable summary of which selectors this environment can run."""
+    lines = [
+        f"Feature selection algorithms available: "
+        f"{len(feature_selection_mapping)}/{len(ALGORITHM_IMPORTS)}"
+    ]
+    if unavailable_algorithms:
+        lines.append(
+            "Unavailable (optional dependency missing - install the extras in "
+            "requirements-optional.txt to enable them):"
+        )
+        for name in sorted(unavailable_algorithms):
+            lines.append(f"  - {name}: {unavailable_algorithms[name]}")
+    return "\n".join(lines)
 
 
 # Define hyperparameter variables
@@ -151,40 +199,6 @@ no_hyperparameters = ['DT','LeadingEV']
 # NN Algorithms
 algo_name_NN = ['CAE', 'UFS', 'DLFS', 'GRACES']
 
-# Mapping of algorithm names to their feature selection functions
-feature_selection_mapping = {
-    'ETree': ETree_FS,
-    'AdaBoost': AdaBoost_FS,
-    'Univariate': Univariate_FS,
-    'CT': CT_FS,
-    'low_variance': low_variance_FS,
-    'SVC': SVC_FS,
-    'SVM_RBF': SVM_RBF_FS,
-    'SHAP': SHAP_FS,
-
-    'LS': LS_FS,
-    'Skewness': Skewness_FS,
-    'MCFS': MCFS_FS,
-    'DT': DT_FS,
-    'ReliefF': ReliefF_FS,
-    'alpha_investing': alpha_investing_FS,
-    'DecisionTree_Forward': DecisionTree_Forward_FS,
-    'DLFS': DLFS_FS,
-    'SVM_Forward': SVM_Forward_FS,
-    'GRAPH': GRAPH_FS,
-    'RFS': RFS_FS,
-    'LeadingEV': LeadingEV_FS,
-    'CAE': CAE_FS,
-    'mRMR': mRMR_FS,
-    'GRACES': GRACES_FS,
-    'UFS': UFS_FS,
-    'DecisionTree_Backward': DecisionTree_Backward_FS,
-    'SVM_Backward': SVM_Backward_FS,
-    'CEI_GA': CEI_GA_FS,
-
-
-
-    # 'CARTE': CARTE_FS,  # currently commented out
-}
+# `feature_selection_mapping` is built above from ALGORITHM_IMPORTS.
 
 

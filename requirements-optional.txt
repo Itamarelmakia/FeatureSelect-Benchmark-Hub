@@ -1,0 +1,22 @@
+# Optional dependencies for the neural feature selection algorithms.
+#
+# These are large, platform-specific packages and are intentionally kept out of
+# requirements.txt so that the benchmark installs and runs on a clean machine.
+# Install them only if you need these four algorithms:
+#
+#   CAE    - tensorflow, keras
+#   DLFS   - tensorflow, keras, torch
+#   UFS    - keras, h5py, torch, torch_geometric
+#   GRACES - torch, torch_geometric
+#
+# Install with:
+#   pip install -r requirements-optional.txt
+#
+# torch_geometric usually needs to be installed against a matching torch build;
+# see https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html
+
+tensorflow
+keras
+torch
+torch_geometric
+h5py

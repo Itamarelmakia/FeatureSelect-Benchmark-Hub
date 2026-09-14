@@ -84,7 +84,7 @@ def cfs(X, y, k,row,seed):
             if i not in selected_features:
                 current_set = selected_features + [i]
                 current_merit = merit_calculation(X[:, current_set], y)
-                if current_merit > best_merit[]:
+                if current_merit > best_merit:
                     best_merit = current_merit
                     best_feature = i
         if best_feature is None:

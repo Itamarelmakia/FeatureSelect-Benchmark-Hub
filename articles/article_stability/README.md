@@ -58,6 +58,14 @@ python3 articles/article_stability/scripts/run_real_data_r2_stability_slice.py
 
 Outputs are written to `results/article_stability/real_data/r2/` at the hub root.
 
+`LASSO_Stability` is the published implementation in
+`src/fs_algorithms/LASSO_Stability.py`, run with `n_bootstrap = 50` and `C = 0.1`.
+It returns the top K features by selection frequency. The hyperparameter sheet
+also lists `selection_threshold = 0.5`, which the selector does not apply. It
+needs scikit-learn below 1.8, so install the hub's `requirements.txt` or the
+exact `requirements-repro-lock.txt`. With scikit-learn 1.8 or newer it silently
+returns an invalid selection instead of raising.
+
 ### 3. Analyze a per-fold parquet (offline stability)
 
 ```bash

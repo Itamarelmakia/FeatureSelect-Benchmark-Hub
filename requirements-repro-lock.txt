@@ -1,4 +1,5 @@
-# Exact reproduction environment for the published experiments.
+# Exact, repeatable environment for running the published implementations.
+# It is not a record of the environment that produced the published results.
 #
 # Pins every core dependency, including scikit-learn 1.7.2. scikit-learn 1.7.2
 # declares support for Python 3.10-3.13, so this lock targets those versions

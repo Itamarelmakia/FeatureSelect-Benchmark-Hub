@@ -110,6 +110,10 @@ performance. Its public reproducibility package — scripts, configs, and data/o
 documentation — lives under
 [`articles/article_stability/`](articles/article_stability/README.md).
 
+The stability study selects features with ETree, mRMR, ReliefF and
+`LASSO_Stability`. `LASSO_Stability` is registered in the hub for that study but
+is not part of the 27-algorithm benchmark default (see Usage below).
+
 ---
 
 ## Repository Structure
@@ -144,7 +148,7 @@ part of the repository — see [Datasets](#datasets) below.
 ├── requirements.txt             # Core dependencies
 ├── requirements-optional.txt    # Heavy extras for the 4 neural FS methods
 ├── requirements-dev.txt         # Test dependencies
-├── requirements-repro-lock.txt  # Exact pins for reproducing the published experiments
+├── requirements-repro-lock.txt  # Exact pins for running the published implementations
 ├── LICENSE
 └── README.md
 ```
@@ -179,8 +183,9 @@ source .venv/bin/activate      # on Linux / macOS
 pip install -r requirements.txt
 ```
 
-This installs everything needed to run **23 of the 27** feature selection
-algorithms and the full evaluation pipeline.
+This installs everything needed to run **23 of the 27** published benchmark
+algorithms, `LASSO_Stability` (used by the stability study), and the full
+evaluation pipeline.
 
 `requirements.txt` allows scikit-learn `>=1.5,<1.8`. scikit-learn 1.8 removed
 arguments that published selectors pass (for example `algorithm` in
@@ -205,10 +210,11 @@ python src/Main_FS.py --list-algorithms
 Algorithms whose dependencies are missing are reported and skipped — they never
 abort a benchmark run.
 
-5. **(Optional) Use the exact reproduction environment**
+5. **(Optional) Use the pinned environment**
 
-To reproduce the published experiments with every core package pinned, install
-the lock file instead of `requirements.txt`:
+To run the published implementations with every core package pinned, so that
+runs are repeatable, install the lock file instead of `requirements.txt`. It is
+not a record of the environment that produced the published results.
 
 ```bash
 pip install -r requirements-repro-lock.txt
@@ -280,6 +286,12 @@ Outputs are written to `results/FS/<experiment-name>.xlsx` and include:
 Results accumulate across runs: re-running skips (dataset, algorithm, K,
 evaluation model) combinations that are already recorded in the workbook.
 
+The default algorithm group, `--alg-group All`, is exactly the 27 algorithms of
+the published benchmark. `LASSO_Stability` is registered for the stability study
+(`articles/article_stability/`), so `--list-algorithms` counts 28 algorithms,
+but it belongs to no algorithm group: the study's scripts call it directly, and
+`Main_FS.py` does not run it.
+
 **Options**
 
 | Flag | Meaning |
@@ -339,12 +351,42 @@ pytest
 The suite covers the import contract (the pipeline must run without the optional
 neural dependencies), the CLI contract, and an end-to-end benchmark run over the
 committed `sample_data_medium/` files — so it passes on a clean clone, with no
-dataset download. The end-to-end tests are marked `slow`:
+dataset download. It also checks:
+
+- that every registered selector returns exactly K distinct, valid feature
+  indices on a committed binary sample, with additional multiclass coverage;
+- that the supervised selectors recover a planted signal, which catches silent
+  fallback selections;
+- that the installed scikit-learn is in the supported range, and that
+  `--alg-group All` is still the published 27 algorithms;
+- that `LASSO_Stability` reproduces its published selections.
+
+The end-to-end tests and the four neural selectors are marked `slow`. The neural
+selector tests are skipped, with the reason, unless `requirements-optional.txt`
+is installed. The test that records the published DLFS limitation below is
+marked as an expected failure.
 
 ```bash
 pytest -m "not slow"    # fast checks only
 pytest -m slow          # end-to-end benchmark run
 ```
+
+---
+
+## Known limitations
+
+The selectors reproduce the published implementations, including the
+behaviour described here. A corrected implementation would be added
+separately, as an opt-in and versioned option, and documented as distinct
+from the published results.
+
+- **DLFS and class labels.** DLFS one-hot encodes the class labels by using
+  them as row indices, so it assumes the labels are `0..C-1`. The loader
+  subtracts 1 from the labels unless their minimum is already 0, and that does
+  not always produce `0..C-1`. The glass labels `{1, 2, 3, 5, 6, 7}` become
+  `{0, 1, 2, 4, 5, 6}`, and DLFS raises an `IndexError` on them. Labels
+  `{-1, 1}` become `{-2, 0}`, and then both classes get the same one-hot
+  target, without any error.
 
 ---
 

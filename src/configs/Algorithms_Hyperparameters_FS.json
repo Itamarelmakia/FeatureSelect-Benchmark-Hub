@@ -258,5 +258,14 @@
             "f_correct": 0,
             "comment": "epochs=5; learning_rate=0.001; q=2n_dropouts=10dropout_prob=0.5batch_size=16alpha=0.95sigma=0.1alpha=0.95f_correct=0"
         }
+    ],
+    "LASSO_Stability": [
+        {
+            "WIF": 1,
+            "n_bootstrap": 50,
+            "selection_threshold": 0.5,
+            "C": 0.1,
+            "comment": "n_bootstrap=50; C=0.1; selection_threshold is not applied: the selector returns the top-K features by selection frequency"
+        }
     ]
 }

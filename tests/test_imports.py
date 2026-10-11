@@ -28,7 +28,7 @@ def test_core_selectors_are_available_without_optional_deps(config):
         "SVM_RBF", "SHAP", "LS", "Skewness", "MCFS", "DT", "ReliefF",
         "alpha_investing", "DecisionTree_Forward", "SVM_Forward", "GRAPH",
         "RFS", "LeadingEV", "mRMR", "DecisionTree_Backward", "SVM_Backward",
-        "CEI_GA",
+        "CEI_GA", "LASSO_Stability",
     }
     missing = core - set(config.feature_selection_mapping)
     assert not missing, (

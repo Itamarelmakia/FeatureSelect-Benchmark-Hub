@@ -127,6 +127,10 @@ ALGORITHM_IMPORTS = [
     ('UFS', 'UFS', 'UFS_FS'),
     # 'CARTE' is implemented in fs_algorithms/CARTE.py but is not part of the
     # published benchmark and is intentionally left unregistered.
+    # Used by the stability study (articles/article_stability). It is registered
+    # so that study can resolve it, but it is deliberately absent from every
+    # default algorithm group: `--alg-group All` still runs the published 27.
+    ('LASSO_Stability', 'LASSO_Stability', 'LASSO_Stability_FS'),
 ]
 
 # Mapping of algorithm names to their feature selection functions.
@@ -189,6 +193,7 @@ GRAPH_Backward_hyper = pd.read_excel(Loadpath_hyper, sheet_name='GRAPH', engine=
 SVM_Backward_hyper = pd.read_excel(Loadpath_hyper, sheet_name='SVM_Backward', engine='openpyxl')
 
 CEI_GA_hyper = pd.read_excel(Loadpath_hyper, sheet_name='CEI_GA', engine='openpyxl')
+LASSO_Stability_hyper = pd.read_excel(Loadpath_hyper, sheet_name='LASSO_Stability', engine='openpyxl')
 
 
 

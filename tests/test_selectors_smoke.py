@@ -5,10 +5,10 @@ one cross-validation fold of a committed sample dataset and must return exactly
 K distinct, valid feature indices. A planted-signal check on synthetic data
 catches selectors that quietly return a fallback selection instead of raising.
 
-The 23 core selectors need only requirements.txt and always run. The four
-neural selectors need requirements-optional.txt: they are skipped, with the
-import error as the reason, when those packages are missing, and they are
-marked `slow`.
+The 23 core selectors and LASSO_Stability need only requirements.txt and always
+run. The four neural selectors need requirements-optional.txt: they are
+skipped, with the import error as the reason, when those packages are missing,
+and they are marked `slow`.
 """
 
 import os
@@ -31,6 +31,9 @@ KBS_DEFAULT_ALL = [
 ]
 NEURAL_SELECTORS = ["DLFS", "CAE", "GRACES", "UFS"]
 CORE_SELECTORS = [name for name in KBS_DEFAULT_ALL if name not in NEURAL_SELECTORS]
+# Registered for the stability study, but not part of the KBS default group.
+STABILITY_SELECTORS = ["LASSO_Stability"]
+NON_NEURAL_SELECTORS = CORE_SELECTORS + STABILITY_SELECTORS
 
 # Supervised selectors that recover a planted class-mean shift. Excluded: the
 # unsupervised selectors (CT, low_variance, Skewness, LS, MCFS, DT, LeadingEV),
@@ -39,7 +42,7 @@ CORE_SELECTORS = [name for name in KBS_DEFAULT_ALL if name not in NEURAL_SELECTO
 PLANTED_SIGNAL_SELECTORS = [
     "ETree", "AdaBoost", "Univariate", "SVC", "SVM_RBF", "SHAP", "ReliefF",
     "alpha_investing", "DecisionTree_Forward", "SVM_Forward", "RFS", "mRMR",
-    "DecisionTree_Backward", "SVM_Backward", "CEI_GA",
+    "DecisionTree_Backward", "SVM_Backward", "CEI_GA", "LASSO_Stability",
 ]
 
 K_VALUES = (1, 5)
@@ -137,15 +140,17 @@ def test_kbs_default_group_is_unchanged(utilities, config, monkeypatch):
     names = [algo["name"] for algo in utilities.get_sorted_algorithms("All")]
     assert names == KBS_DEFAULT_ALL
     assert len(names) == 27
+    for name in STABILITY_SELECTORS:
+        assert name in declared and name not in names
 
 
-@pytest.mark.parametrize("name", CORE_SELECTORS)
+@pytest.mark.parametrize("name", NON_NEURAL_SELECTORS)
 def test_core_selector_on_binary_data(utilities, config, sample_data_dir, name):
     check_selector_on_sample(utilities, config, sample_data_dir, "hepatitis", name)
 
 
 # SHAP is covered on binary data only (test_core_selector_on_binary_data).
-@pytest.mark.parametrize("name", [name for name in CORE_SELECTORS if name != "SHAP"])
+@pytest.mark.parametrize("name", [name for name in NON_NEURAL_SELECTORS if name != "SHAP"])
 def test_core_selector_on_multiclass_data(utilities, config, sample_data_dir, name):
     check_selector_on_sample(utilities, config, sample_data_dir, "glass", name)
 

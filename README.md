@@ -144,6 +144,7 @@ part of the repository — see [Datasets](#datasets) below.
 ├── requirements.txt             # Core dependencies
 ├── requirements-optional.txt    # Heavy extras for the 4 neural FS methods
 ├── requirements-dev.txt         # Test dependencies
+├── requirements-repro-lock.txt  # Exact pins for reproducing the published experiments
 ├── LICENSE
 └── README.md
 ```
@@ -181,6 +182,10 @@ pip install -r requirements.txt
 This installs everything needed to run **23 of the 27** feature selection
 algorithms and the full evaluation pipeline.
 
+`requirements.txt` allows scikit-learn `>=1.5,<1.8`. scikit-learn 1.8 removed
+arguments that published selectors pass (for example `algorithm` in
+`AdaBoostClassifier`), so newer releases break them.
+
 4. **(Optional) Install the neural FS extras**
 
 Four algorithms — **CAE**, **DLFS**, **UFS** and **GRACES** — depend on large,
@@ -200,7 +205,22 @@ python src/Main_FS.py --list-algorithms
 Algorithms whose dependencies are missing are reported and skipped — they never
 abort a benchmark run.
 
-This project requires **Python 3.8+** (tested on 3.14).
+5. **(Optional) Use the exact reproduction environment**
+
+To reproduce the published experiments with every core package pinned, install
+the lock file instead of `requirements.txt`:
+
+```bash
+pip install -r requirements-repro-lock.txt
+```
+
+It pins **scikit-learn 1.7.2**, which declares support for **Python 3.10–3.13**,
+so create the environment with one of those versions. The optional neural
+extras are not pinned.
+
+**Python versions:** 3.10–3.13. The newest scikit-learn release that
+`requirements.txt` allows (1.7.2) declares support for exactly these versions;
+Python 3.14 is outside that range and is not supported.
 
 ---
 

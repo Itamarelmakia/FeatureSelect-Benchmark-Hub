@@ -1,0 +1,54 @@
+# Known-compatible pinned core environment for the validated reproducibility
+# workflows in this repository. It is not a reconstruction of the original
+# historical environment, and selector-specific limitations documented in the
+# README still apply.
+#
+# Pins every core dependency, including scikit-learn 1.7.2. scikit-learn 1.7.2
+# declares support for Python 3.10-3.13, so this lock targets those versions
+# only. Install it instead of requirements.txt:
+#
+#   pip install -r requirements-repro-lock.txt
+#
+# The optional neural extras (requirements-optional.txt) are not pinned here.
+#
+# Resolved from requirements.txt with:
+#   uv pip compile requirements.txt -c <(echo scikit-learn==1.7.2) \
+#     --universal --python-version 3.10 --fork-strategy fewest --no-header --no-annotate
+
+category-encoders==2.8.1
+cloudpickle==3.1.2
+colorama==0.4.6 ; sys_platform == 'win32'
+contourpy==1.3.2
+cycler==0.12.1
+et-xmlfile==2.0.0
+fonttools==4.65.0
+formulaic==1.2.2
+interface-meta==2.0.1
+joblib==1.6.0
+kiwisolver==1.5.1
+llvmlite==0.50.0
+matplotlib==3.10.9
+narwhals==2.27.1
+numba==0.68.0
+numpy==2.2.6
+openpyxl==3.1.5
+packaging==26.3
+pandas==2.3.3
+patsy==1.0.3
+pillow==12.3.0
+pyarrow==25.0.1
+pyparsing==3.3.3
+python-dateutil==2.9.0.post0
+pytz==2026.5
+scikit-learn==1.7.2
+scipy==1.15.3
+shap==0.49.1
+six==1.17.0
+skrebate==0.8.4
+slicer==0.0.8
+statsmodels==0.15.0
+threadpoolctl==3.7.0
+tqdm==4.70.1
+typing-extensions==4.16.0
+tzdata==2026.5
+wrapt==2.5.0

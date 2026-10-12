@@ -87,3 +87,21 @@ def test_run_is_repeatable_with_the_configured_seed(benchmark_results, tmp_path,
     pd.testing.assert_series_equal(
         first["Average AUC"], second["Average AUC"], check_names=False
     )
+
+
+def test_adaboost_completes_a_benchmark_run(tmp_path, sample_data_dir):
+    """AdaBoost aborted the whole run on scikit-learn 1.8; it must complete here."""
+    out_dir = tmp_path / "FS"
+    exit_code = Main_FS.main([
+        "--data-dir", sample_data_dir,
+        "--datasets", "hepatitis",
+        "--algorithms", "AdaBoost",
+        "--experiment-name", "pytest_adaboost",
+        "--output-dir", str(out_dir),
+    ])
+
+    assert exit_code == 0
+    results = pd.read_excel(out_dir / "pytest_adaboost.xlsx")
+    fs_rows = results[(results["FS/HD"] == "FS") & (results["Algorithm"] == "AdaBoost")]
+    assert not fs_rows.empty, "AdaBoost produced no feature-selection rows"
+    assert results["Average AUC"].dropna().between(0.0, 1.0).all()

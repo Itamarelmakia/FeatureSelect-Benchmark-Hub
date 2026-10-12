@@ -154,7 +154,8 @@ def get_algorithms_mapping():
         'UFS': UFS_hyper,
         'DecisionTree_Backward': DecisionTree_Backward_hyper,
         'SVM_Backward': SVM_Backward_hyper,
-        'CEI_GA': CEI_GA_hyper
+        'CEI_GA': CEI_GA_hyper,
+        'LASSO_Stability': LASSO_Stability_hyper
     }
 
     algorithms = {}

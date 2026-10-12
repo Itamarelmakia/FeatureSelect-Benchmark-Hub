@@ -5,11 +5,16 @@
 # are neural methods that need the heavy, platform-specific packages listed in
 # requirements-optional.txt. Run `python src/Main_FS.py --list-algorithms` to
 # see what the current environment can run.
+#
+# scikit-learn is capped below 1.8: that release removed arguments the published
+# selectors pass (for example `algorithm` in AdaBoostClassifier). The lower bound
+# keeps AdaBoost on its SAMME variant in every supported install. For pinned
+# versions of everything, install requirements-repro-lock.txt instead.
 
 numpy
 pandas
 scipy
-scikit-learn
+scikit-learn>=1.5,<1.8
 matplotlib
 pyarrow
 openpyxl

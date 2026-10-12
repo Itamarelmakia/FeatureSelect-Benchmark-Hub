@@ -148,7 +148,7 @@ part of the repository — see [Datasets](#datasets) below.
 ├── requirements.txt             # Core dependencies
 ├── requirements-optional.txt    # Heavy extras for the 4 neural FS methods
 ├── requirements-dev.txt         # Test dependencies
-├── requirements-repro-lock.txt  # Exact pins for running the published implementations
+├── requirements-repro-lock.txt  # Known-compatible pinned core environment
 ├── LICENSE
 └── README.md
 ```
@@ -212,9 +212,12 @@ abort a benchmark run.
 
 5. **(Optional) Use the pinned environment**
 
-To run the published implementations with every core package pinned, so that
-runs are repeatable, install the lock file instead of `requirements.txt`. It is
-not a record of the environment that produced the published results.
+`requirements-repro-lock.txt` is a known-compatible pinned core environment for
+the validated reproducibility workflows in this repository. Install it instead
+of `requirements.txt`. It is not a reconstruction of the original historical
+environment, and the selector-specific limitations under Known limitations
+still apply. For example, it pins shap 0.49.1, so the SHAP multiclass
+limitation applies to it.
 
 ```bash
 pip install -r requirements-repro-lock.txt
@@ -354,7 +357,8 @@ committed `sample_data_medium/` files — so it passes on a clean clone, with no
 dataset download. It also checks:
 
 - that every registered selector returns exactly K distinct, valid feature
-  indices on a committed binary sample, with additional multiclass coverage;
+  indices on a committed binary sample, and that every selector except SHAP
+  also does so on a multiclass sample (see Known limitations);
 - that the supervised selectors recover a planted signal, which catches silent
   fallback selections;
 - that the installed scikit-learn is in the supported range, and that
@@ -387,6 +391,11 @@ from the published results.
   `{0, 1, 2, 4, 5, 6}`, and DLFS raises an `IndexError` on them. Labels
   `{-1, 1}` become `{-2, 0}`, and then both classes get the same one-hot
   target, without any error.
+- **SHAP multiclass compatibility.** SHAP 0.45+ changed the representation of
+  multi-output SHAP values. The current selector expects the pre-0.45
+  multiclass format, so multiclass SHAP selection should not be used with
+  SHAP 0.45+ until the compatibility adapter is released. Binary SHAP
+  selection is unaffected.
 
 ---
 
